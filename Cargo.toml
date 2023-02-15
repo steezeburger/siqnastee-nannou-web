@@ -1,20 +1,19 @@
 # You must change these to your own details.
 [package]
-name = "nannou_web_template"
+name = "siqnastee_nannou_web"
 description = "template repository to run nannou app both in native app and web browser."
 version = "0.0.1"
-authors = ["You <you@example.com>"]
+authors = ["Jesse Snyder"]
 categories = ["wasm"]
 readme = "README.md"
-edition = "2018"
-resolver = "2" 
+edition = "2021"
 
 [[bin]]
-name = "nannou_web_compat"
+name = "siqnastee_nannou_web"
 path = "src/main.rs"
 
 [lib]
-name = "nannou_web_test"
+name = "siqnastee_nannou_web_test"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 

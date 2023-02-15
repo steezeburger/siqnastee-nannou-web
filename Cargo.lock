@@ -1248,21 +1248,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nannou_web_template"
-version = "0.0.1"
-dependencies = [
- "async-std",
- "console_error_panic_hook",
- "futures",
- "js-sys",
- "nannou",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "wasm-bindgen-test",
- "web-sys",
-]
-
-[[package]]
 name = "nannou_wgpu"
 version = "0.18.0"
 source = "git+https://github.com/nannou-org/nannou.git?rev=287be8a4d075b17332ca0bf34649f5d25e751c00#287be8a4d075b17332ca0bf34649f5d25e751c00"
@@ -1895,6 +1880,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e51e73328dc4ac0c7ccbda3a494dfa03df1de2f46018127f60c693f2648455b0"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "siqnastee_nannou_web"
+version = "0.0.1"
+dependencies = [
+ "async-std",
+ "console_error_panic_hook",
+ "futures",
+ "js-sys",
+ "nannou",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test",
+ "web-sys",
 ]
 
 [[package]]
