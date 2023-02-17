@@ -84,13 +84,13 @@ fn get_random_color() -> Rgb {
     Rgb::new(red, green, blue)
 }
 
-pub async fn run_app() {
+pub async fn run_app(width: u32, height: u32) {
     // Since ModelFn is not a closure we need this workaround to pass the calculated model
     thread_local!(static MODEL: RefCell<Option<Model>> = Default::default());
 
-    app::Builder::new_async(|app| {
+    app::Builder::new_async(move |app| {
         Box::new(async move {
-            create_window(app).await;
+            create_window(app, width, height).await;
             let model = Model::new(app);
             MODEL.with(|m| m.borrow_mut().replace(model));
             MODEL.with(|m| m.borrow_mut().take().unwrap())
@@ -102,7 +102,7 @@ pub async fn run_app() {
         .await;
 }
 
-async fn create_window(app: &App) {
+async fn create_window(app: &App, width: u32, height: u32) {
     let device_desc = DeviceDescriptor {
         limits: Limits {
             max_texture_dimension_2d: 8192,
@@ -112,6 +112,7 @@ async fn create_window(app: &App) {
     };
 
     app.new_window()
+        .size(width, height)
         .device_descriptor(device_desc)
         .title("siqnastee")
         // TODO

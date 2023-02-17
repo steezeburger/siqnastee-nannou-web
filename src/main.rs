@@ -6,6 +6,6 @@ use sketch::{run_app, Model};
 
 fn main() {
     block_on(async {
-        run_app().await;
+        run_app(1024, 768).await;
     });
 }

@@ -7,11 +7,11 @@ mod sketch;
 
 // web app entry_point
 #[wasm_bindgen]
-pub async fn main_web(width: f32, height: f32) {
+pub async fn main_web(width: u32, height: u32) {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
 
-    block_on(async {
-        run_app().await;
+    block_on(async move {
+        run_app(width, height).await;
     });
 }
