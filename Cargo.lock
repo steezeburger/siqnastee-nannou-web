@@ -1891,6 +1891,7 @@ dependencies = [
  "futures",
  "js-sys",
  "nannou",
+ "rand 0.8.5",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",

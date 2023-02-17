@@ -1,48 +1,69 @@
-// Derived from the example in nature_of_code
-
-// The Nature of Code
-// Daniel Shiffman
-// http://natureofcode.com
-//
-// Example 8-3: Simple Recursion
-
-use nannou::prelude::*;
-
-use nannou::wgpu::{Backends, DeviceDescriptor, Limits};
 use std::cell::RefCell;
 
-pub struct Model;
+use nannou::prelude::*;
+use nannou::wgpu::{Backends, DeviceDescriptor, Limits};
+
+use rand::distributions::{Alphanumeric, DistString};
+
+pub struct Model {
+    /// The width of the browser window
+    pub width: f32,
+
+    /// The height of the browser window
+    pub height: f32,
+}
 
 fn update(_app: &App, _model: &mut Model, _update: Update) {}
 
-fn view(app: &App, _model: &Model, frame: Frame) {
+// TODO - regenerate view on resize
+fn resized(_app: &App, _model: &mut Model, window_size: Vec2) {
+    // FIXME - doesn't seem to work. is it because we're in a browser?
+    web_sys::console::log_1(
+        &format!("w: {}, h: {}", window_size.x, window_size.y).into());
+}
+
+// TODO - regenerate view on touch
+fn touch(_app: &App, _model: &mut Model, _touch: TouchEvent) {}
+
+// TODO - regenerate view on mouse move
+fn mouse_moved(_app: &App, _model: &mut Model, _: Point2) {}
+
+fn view(app: &App, model: &Model, frame: Frame) {
     // Begin drawing
     let draw = app.draw();
-    draw.background().color(WHITE);
+    draw.background().color(BLACK);
 
-    draw_circle(&draw, 0.0, 0.0, 200.0);
+    // Where the actual drawing happens
+    draw_main(&draw, model.width, model.height);
 
     // Write the result of our drawing to the window's frame.
     draw.to_frame(app, &frame).unwrap();
 }
 
-// Recursive function
-fn draw_circle(draw: &Draw, x: f32, y: f32, r: f32) {
-    let norm_radius = map_range(r, 2.0, 360.0, 0.0, 1.0);
-    draw.ellipse()
-        .x_y(x, y)
-        .radius(r)
-        .hsva(norm_radius, 0.75, 1.0, norm_radius)
-        .stroke(BLACK);
+fn draw_main(draw: &Draw, width: f32, height: f32) {
+    web_sys::console::log_1(&format!("w: {}, h: {}", width, height).into());
 
-    if r > 8.0 {
-        // Four circles! left right, up and down
-        draw_circle(&draw, x + r, y, r / 2.0);
-        draw_circle(&draw, x - r, y, r / 2.0);
-        draw_circle(&draw, x, y + r, r / 2.0);
-        draw_circle(&draw, x, y - r, r / 2.0);
-    }
+    let rand_letter = Alphanumeric.sample_string(&mut rand::thread_rng(), 1);
+
+    let rect_w: f32 = 5.0;
+    let rect_h: f32 = 10.0;
+
+    let top_left = pt2(-width / 2.0 + 50.0, height / 2.0 + 50.0);
+    let offset = vec2(rect_w / 2.0, -rect_h / 2.0);
+    let xy = top_left + offset;
+
+    draw.rect()
+        .xy(xy)
+        .w_h(rect_w, rect_h)
+        .color(SPRINGGREEN);
+
+    draw.text(&rand_letter)
+        .x(0.0)
+        .y(0.0)
+        .font_size(24)
+        .color(REBECCAPURPLE);
 }
+
 
 pub async fn run_app(model: Model) {
     // Since ModelFn is not a closure we need this workaround to pass the calculated model
@@ -56,10 +77,10 @@ pub async fn run_app(model: Model) {
             MODEL.with(|m| m.borrow_mut().take().unwrap())
         })
     })
-    .backends(Backends::PRIMARY | Backends::GL)
-    .update(update)
-    .run_async()
-    .await;
+        .backends(Backends::PRIMARY | Backends::GL)
+        .update(update)
+        .run_async()
+        .await;
 }
 
 async fn create_window(app: &App) {
@@ -73,15 +94,11 @@ async fn create_window(app: &App) {
 
     app.new_window()
         .device_descriptor(device_desc)
-        .title("nannou web test")
-        // .raw_event(raw_event)
-        // .key_pressed(key_pressed)
-        // .key_released(key_released)
-        // .mouse_pressed(mouse_pressed)
-        // .mouse_moved(mouse_moved)
-        // .mouse_released(mouse_released)
-        // .mouse_wheel(mouse_wheel)
+        .title("siqnastee")
+        .mouse_moved(mouse_moved)
+        // TODO
         // .touch(touch)
+        // .resized(resized)
         .view(view)
         .build_async()
         .await
