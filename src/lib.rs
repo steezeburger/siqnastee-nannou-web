@@ -11,11 +11,7 @@ pub async fn main_web(width: f32, height: f32) {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
 
-    let model = Model {
-        width,
-        height,
-    };
     block_on(async {
-        run_app(model).await;
+        run_app().await;
     });
 }

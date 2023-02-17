@@ -5,11 +5,7 @@ use async_std::task::block_on;
 use sketch::{run_app, Model};
 
 fn main() {
-    let model = Model {
-        width: 53.0,
-        height: 53.0,
-    };
     block_on(async {
-        run_app(model).await;
+        run_app().await;
     });
 }
