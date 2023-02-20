@@ -1,7 +1,7 @@
 use async_std::task::block_on;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use sketch::{Model, run_app};
+use sketch::{run_app, Model};
 
 mod sketch;
 

@@ -22,12 +22,12 @@ impl Model {
         // println!("w: {}, h: {}", window_width, window_height);
 
         // The size of our rectangles.
-        let square_width = 16.0;
-        let square_height = 24.0;
+        let rectangle_width = 16.0;
+        let rectangle_height = 24.0;
 
         // Calculate the number of columns and rows needed to fill the window.
-        let num_cols = (window_width / square_width).ceil() as usize;
-        let num_rows = (window_height / square_height).ceil() as usize;
+        let num_cols = (window_width / rectangle_width).ceil() as usize;
+        let num_rows = (window_height / rectangle_height).ceil() as usize;
 
         // Calculate the x and y positions of the center of the grid.
         let center_x = app.window_rect().left() + app.window_rect().w() / 2.0;
@@ -41,9 +41,9 @@ impl Model {
         let mut grid = vec![vec![Rect::from_w_h(0.0, 0.0); num_cols]; num_rows];
         for i in 0..num_rows {
             for j in 0..num_cols {
-                let x = start_x + j as f32 * square_width;
-                let y = start_y + i as f32 * square_height;
-                grid[i][j] = Rect::from_x_y_w_h(x, y, square_width, square_height);
+                let x = start_x + j as f32 * rectangle_width;
+                let y = start_y + i as f32 * rectangle_height;
+                grid[i][j] = Rect::from_x_y_w_h(x, y, rectangle_width, rectangle_height);
             }
         }
         Self { window_width, window_height, grid }

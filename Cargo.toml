@@ -1,8 +1,8 @@
 # You must change these to your own details.
 [package]
 name = "siqnastee_nannou_web"
-description = "template repository to run nannou app both in native app and web browser."
-version = "0.0.1"
+description = "generative art project."
+version = "0.53.0"
 authors = ["Jesse Snyder"]
 categories = ["wasm"]
 readme = "README.md"

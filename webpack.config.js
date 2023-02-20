@@ -26,6 +26,9 @@ module.exports = {
   },
   devServer: {
     static: [dist],
+    // allow all hosts for dev server so that we can
+    // access the dev server through localtunnel
+    allowedHosts: "all"
   },
   performance: { hints: false },
   plugins: [
