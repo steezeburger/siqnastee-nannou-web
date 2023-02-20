@@ -37,9 +37,6 @@ impl Model {
         let window_width = app.window_rect().w();
         let window_height = app.window_rect().h();
 
-        // web_sys::console::log_1(&format!("w: {}, h: {}", window_width, window_height).into());
-        // println!("w: {}, h: {}", window_width, window_height);
-
         // The size of our rectangles.
         let rectangle_width = 16.0;
         let rectangle_height = 24.0;
@@ -95,7 +92,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(BLACK);
     for row in &model.grid {
         for siq_rect in row {
-            // draw rectangle with random color or color we manually chose
+            // draw rectangle black by default or with a random color if it's been touched
             let mut color = Rgb::new(0.0, 0.0, 0.0);
             if siq_rect.touched {
                 color = get_random_color();
