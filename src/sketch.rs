@@ -53,8 +53,8 @@ impl Model {
         let center_y = app.window_rect().bottom() + app.window_rect().h() / 2.0;
 
         // Calculate the starting x and y positions for the grid.
-        let start_x = center_x - (num_cols as f32 / 2.0) * 16.0;
-        let start_y = center_y - (num_rows as f32 / 2.0) * 24.0;
+        let start_x = 8.0 + center_x - (num_cols as f32 / 2.0) * 16.0;
+        let start_y = 12.0 + center_y - (num_rows as f32 / 2.0) * 24.0;
 
         // Create the grid that will be rendered later.
         let default_rect = SiqRect {
@@ -96,9 +96,9 @@ fn view(app: &App, model: &Model, frame: Frame) {
     for row in &model.grid {
         for siq_rect in row {
             // draw rectangle with random color or color we manually chose
-            let mut color = get_random_color();
+            let mut color = Rgb::new(0.0, 0.0, 0.0);
             if siq_rect.touched {
-                color = siq_rect.color;
+                color = get_random_color();
             }
             draw.rect()
                 .xy(siq_rect.rect.xy())
@@ -121,7 +121,6 @@ fn event(app: &App, model: &mut Model, event: WindowEvent) {
         MouseMoved(location) => {
             let rand_x = rand::thread_rng().gen_range(0..model.num_rows);
             let rand_y = rand::thread_rng().gen_range(0..model.num_cols);
-            model.grid[rand_x][rand_y].color = Rgb::new(0.0, 0.0, 0.0);
             model.grid[rand_x][rand_y].touched = true;
         }
         _ => {}
