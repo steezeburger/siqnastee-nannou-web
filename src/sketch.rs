@@ -27,6 +27,9 @@ pub struct SiqRect {
 
     /// The Nannou Rect
     rect: Rect,
+
+    /// True if we've manually set this rect's color
+    touched: bool,
 }
 
 impl Model {
@@ -57,6 +60,7 @@ impl Model {
         let default_rect = SiqRect {
             color: Rgb::new(0.0, 0.0, 0.0),
             rect: Rect::from_w_h(0.0, 0.0),
+            touched: false,
         };
 
         let mut grid = vec![vec![default_rect; num_cols]; num_rows];
@@ -67,6 +71,7 @@ impl Model {
                 let rect = SiqRect {
                     color: get_random_color(),
                     rect: Rect::from_x_y_w_h(x, y, rectangle_width, rectangle_height),
+                    touched: false,
                 };
                 grid[i][j] = rect;
             }
@@ -90,11 +95,15 @@ fn view(app: &App, model: &Model, frame: Frame) {
     draw.background().color(BLACK);
     for row in &model.grid {
         for siq_rect in row {
-            // draw rectangle with random color
+            // draw rectangle with random color or color we manually chose
+            let mut color = get_random_color();
+            if siq_rect.touched {
+                color = siq_rect.color;
+            }
             draw.rect()
                 .xy(siq_rect.rect.xy())
                 .w_h(siq_rect.rect.w(), siq_rect.rect.h())
-                .color(siq_rect.color);
+                .color(color);
 
             // draw random letter
             let rand_letter = Alphanumeric.sample_string(&mut rand::thread_rng(), 1);
@@ -112,10 +121,8 @@ fn event(app: &App, model: &mut Model, event: WindowEvent) {
         MouseMoved(location) => {
             let rand_x = rand::thread_rng().gen_range(0..model.num_rows);
             let rand_y = rand::thread_rng().gen_range(0..model.num_cols);
-            model.grid[rand_x][rand_y] = SiqRect {
-                color: Rgb::new(0.0, 0.0, 0.0),
-                rect: Rect::from_x_y_w_h(rand_x as f32, rand_y as f32, 16.0, 24.0),
-            };
+            model.grid[rand_x][rand_y].color = Rgb::new(0.0, 0.0, 0.0);
+            model.grid[rand_x][rand_y].touched = true;
         }
         _ => {}
     }
