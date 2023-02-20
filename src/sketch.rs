@@ -1,16 +1,32 @@
 use std::cell::RefCell;
 
+use nannou::color::IntoLinSrgba;
+use nannou::draw::properties::ColorScalar;
 use nannou::prelude::*;
 use nannou::wgpu::{Backends, DeviceDescriptor, Limits};
 use rand::distributions::{Alphanumeric, DistString};
+use rand::Rng;
 
 pub struct Model {
     /// width of the window
     window_width: f32,
     /// height of the window
     window_height: f32,
+    /// number of columns
+    num_cols: usize,
+    /// number of rows
+    num_rows: usize,
     /// the grid of rectangles
-    grid: Vec<Vec<Rect>>,
+    grid: Vec<Vec<SiqRect>>,
+}
+
+#[derive(Clone)]
+pub struct SiqRect {
+    /// The color this rectangle should be
+    color: Rgb,
+
+    /// The Nannou Rect
+    rect: Rect,
 }
 
 impl Model {
@@ -38,15 +54,30 @@ impl Model {
         let start_y = center_y - (num_rows as f32 / 2.0) * 24.0;
 
         // Create the grid that will be rendered later.
-        let mut grid = vec![vec![Rect::from_w_h(0.0, 0.0); num_cols]; num_rows];
+        let default_rect = SiqRect {
+            color: Rgb::new(0.0, 0.0, 0.0),
+            rect: Rect::from_w_h(0.0, 0.0),
+        };
+
+        let mut grid = vec![vec![default_rect; num_cols]; num_rows];
         for i in 0..num_rows {
             for j in 0..num_cols {
                 let x = start_x + j as f32 * rectangle_width;
                 let y = start_y + i as f32 * rectangle_height;
-                grid[i][j] = Rect::from_x_y_w_h(x, y, rectangle_width, rectangle_height);
+                let rect = SiqRect {
+                    color: get_random_color(),
+                    rect: Rect::from_x_y_w_h(x, y, rectangle_width, rectangle_height),
+                };
+                grid[i][j] = rect;
             }
         }
-        Self { window_width, window_height, grid }
+        Self {
+            num_cols,
+            num_rows,
+            window_width,
+            window_height,
+            grid,
+        }
     }
 }
 
@@ -58,22 +89,36 @@ fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
     draw.background().color(BLACK);
     for row in &model.grid {
-        for square in row {
+        for siq_rect in row {
             // draw rectangle with random color
             draw.rect()
-                .xy(square.xy())
-                .w_h(square.w(), square.h())
-                .color(get_random_color());
+                .xy(siq_rect.rect.xy())
+                .w_h(siq_rect.rect.w(), siq_rect.rect.h())
+                .color(siq_rect.color);
 
             // draw random letter
             let rand_letter = Alphanumeric.sample_string(&mut rand::thread_rng(), 1);
             draw.text(&rand_letter)
-                .xy(square.xy())
+                .xy(siq_rect.rect.xy())
                 .font_size(12)
                 .color(get_random_color());
         }
     }
     draw.to_frame(app, &frame).unwrap();
+}
+
+fn event(app: &App, model: &mut Model, event: WindowEvent) {
+    match event {
+        MouseMoved(location) => {
+            let rand_x = rand::thread_rng().gen_range(0..model.num_rows);
+            let rand_y = rand::thread_rng().gen_range(0..model.num_cols);
+            model.grid[rand_x][rand_y] = SiqRect {
+                color: Rgb::new(0.0, 0.0, 0.0),
+                rect: Rect::from_x_y_w_h(rand_x as f32, rand_y as f32, 16.0, 24.0),
+            };
+        }
+        _ => {}
+    }
 }
 
 /// Return random Rgb color
@@ -96,10 +141,10 @@ pub async fn run_app(width: u32, height: u32) {
             MODEL.with(|m| m.borrow_mut().take().unwrap())
         })
     })
-        .backends(Backends::PRIMARY | Backends::GL)
-        // .update(update)
-        .run_async()
-        .await;
+    .backends(Backends::PRIMARY | Backends::GL)
+    // .update(update)
+    .run_async()
+    .await;
 }
 
 async fn create_window(app: &App, width: u32, height: u32) {
@@ -120,6 +165,7 @@ async fn create_window(app: &App, width: u32, height: u32) {
         // .touch(touch)
         // .resized(resized)
         .view(view)
+        .event(event)
         .build_async()
         .await
         .unwrap();
