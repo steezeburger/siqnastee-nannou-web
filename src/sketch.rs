@@ -7,6 +7,11 @@ use nannou::wgpu::{Backends, DeviceDescriptor, Limits};
 use rand::distributions::{Alphanumeric, DistString};
 use rand::Rng;
 
+static RECTANGLE_WIDTH: f32 = 16.0;
+static HALF_RECTANGLE_WIDTH: f32 = RECTANGLE_WIDTH / 2.0;
+static RECTANGLE_HEIGHT: f32 = 24.0;
+static HALF_RECTANGLE_HEIGHT: f32 = RECTANGLE_HEIGHT / 2.0;
+
 pub struct Model {
     /// width of the window
     window_width: f32,
@@ -38,8 +43,8 @@ impl Model {
         let window_height = app.window_rect().h();
 
         // The size of our rectangles.
-        let rectangle_width = 16.0;
-        let rectangle_height = 24.0;
+        let rectangle_width = RECTANGLE_WIDTH;
+        let rectangle_height = RECTANGLE_HEIGHT;
 
         // Calculate the number of columns and rows needed to fill the window.
         let num_cols = (window_width / rectangle_width).ceil() as usize;
@@ -50,8 +55,8 @@ impl Model {
         let center_y = app.window_rect().bottom() + app.window_rect().h() / 2.0;
 
         // Calculate the starting x and y positions for the grid.
-        let start_x = 8.0 + center_x - (num_cols as f32 / 2.0) * 16.0;
-        let start_y = 12.0 + center_y - (num_rows as f32 / 2.0) * 24.0;
+        let start_x = HALF_RECTANGLE_WIDTH + center_x - (num_cols as f32 / 2.0) * RECTANGLE_WIDTH;
+        let start_y = HALF_RECTANGLE_HEIGHT + center_y - (num_rows as f32 / 2.0) * RECTANGLE_HEIGHT;
 
         // Create the grid that will be rendered later.
         let default_rect = SiqRect {
@@ -60,11 +65,11 @@ impl Model {
             touched: false,
         };
 
-        let mut grid = vec![vec![default_rect; num_cols]; num_rows];
-        for i in 0..num_rows {
-            for j in 0..num_cols {
-                let x = start_x + j as f32 * rectangle_width;
-                let y = start_y + i as f32 * rectangle_height;
+        let mut grid = vec![vec![default_rect; num_rows]; num_cols];
+        for i in 0..num_cols {
+            for j in 0..num_rows {
+                let x = start_x + i as f32 * rectangle_width;
+                let y = start_y + j as f32 * rectangle_height;
                 let rect = SiqRect {
                     color: get_random_color(),
                     rect: Rect::from_x_y_w_h(x, y, rectangle_width, rectangle_height),
@@ -116,8 +121,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
 fn event(app: &App, model: &mut Model, event: WindowEvent) {
     match event {
         MouseMoved(location) => {
-            let rand_x = rand::thread_rng().gen_range(0..model.num_rows);
-            let rand_y = rand::thread_rng().gen_range(0..model.num_cols);
+            let rand_x = rand::thread_rng().gen_range(0..model.num_cols);
+            let rand_y = rand::thread_rng().gen_range(0..model.num_rows);
             model.grid[rand_x][rand_y].touched = true;
         }
         _ => {}
@@ -144,10 +149,10 @@ pub async fn run_app(width: u32, height: u32) {
             MODEL.with(|m| m.borrow_mut().take().unwrap())
         })
     })
-    .backends(Backends::PRIMARY | Backends::GL)
-    // .update(update)
-    .run_async()
-    .await;
+        .backends(Backends::PRIMARY | Backends::GL)
+        // .update(update)
+        .run_async()
+        .await;
 }
 
 async fn create_window(app: &App, width: u32, height: u32) {
